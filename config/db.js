@@ -1,12 +1,14 @@
-import express from 'express';
-import {
-  registerUser,
-  loginUser
-} from '../controllers/authController.js';
+import mongoose from "mongoose";
 
-const router = express.Router();
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.MONGO_URI);
 
-router.post('/register', registerUser);
-router.post('/login', loginUser);
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.error("MongoDB connection error:", error.message);
+    process.exit(1);
+  }
+};
 
-export default router;
+export default connectDB;
