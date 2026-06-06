@@ -1,44 +1,48 @@
 import express from "express";
-import Document from "../models/Document.js";
+import OpenAI from "openai";
 
 const router = express.Router();
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
 
 router.post("/ask", async (req, res) => {
   try {
     const { message } = req.body;
 
-    const documents = await Document.find();
-
-    let matchedChunks = [];
-
-    documents.forEach((doc) => {
-      doc.chunks.forEach((chunk) => {
-        const words = message.toLowerCase().split(" ");
-
-        const isMatch = words.some((word) =>
-          chunk.toLowerCase().includes(word)
-        );
-
-        if (isMatch) {
-          matchedChunks.push(chunk);
-        }
-      });
-    });
-
-    if (matchedChunks.length === 0) {
-      return res.json({
-        aiResponse: "No related information found in uploaded PDFs."
+    if (!message || !message.trim()) {
+      return res.status(400).json({
+        aiResponse: "Please enter a question."
       });
     }
 
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are a helpful AI assistant inside a research workspace dashboard. Answer clearly and simply."
+        },
+        {
+          role: "user",
+          content: message
+        }
+      ],
+      max_tokens: 500
+    });
+
     res.json({
-      aiResponse: matchedChunks.slice(0, 2).join(" ")
+      aiResponse: completion.choices[0].message.content
     });
 
   } catch (error) {
+    console.error("AI Chat Error:", error.message);
+
     res.status(500).json({
-      message: "Chat failed",
-      error: error.message
+      aiResponse:
+        "AI service failed. Please check OPENAI_API_KEY in .env and Render Environment."
     });
   }
 });

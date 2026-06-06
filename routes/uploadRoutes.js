@@ -141,4 +141,31 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+router.delete("/:id", async (req, res) => {
+  try {
+    const document = await Document.findById(req.params.id);
+
+    if (!document) {
+      return res.status(404).json({
+        message: "Document not found"
+      });
+    }
+
+    if (document.filePath && fs.existsSync(document.filePath)) {
+      fs.unlinkSync(document.filePath);
+    }
+
+    await Document.findByIdAndDelete(req.params.id);
+
+    res.json({
+      message: "PDF deleted successfully"
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "PDF delete failed",
+      error: error.message
+    });
+  }
+});
+
 export default router;
