@@ -4,40 +4,205 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Research Workspace Dashboard</title>
+
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
-    body { background: #0f172a; color: white; min-height: 100vh; }
-    .dashboard { display: flex; min-height: 100vh; }
-    .sidebar { width: 250px; background: #020617; padding: 25px; height: 100vh; position: sticky; top: 0; }
-    .sidebar h2 { color: #38bdf8; margin-bottom: 30px; }
-    .sidebar button { display: block; width: 100%; padding: 12px; margin-bottom: 15px; border: none; border-radius: 10px; background: #1e293b; color: white; cursor: pointer; font-weight: bold; }
-    .sidebar button:hover { background: #38bdf8; color: black; }
-    .main { flex: 1; padding: 30px; }
-    .topbar { margin-bottom: 30px; }
-    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
-    .card { background: #1e293b; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.35); }
-    .card h3 { color: #cbd5e1; margin-bottom: 10px; }
-    .card h2 { color: #38bdf8; font-size: 34px; }
-    .section { background: #1e293b; padding: 25px; border-radius: 15px; margin-bottom: 25px; }
-    input, textarea { width: 100%; padding: 12px; border-radius: 8px; border: none; margin: 10px 0; outline: none; }
-    textarea { min-height: 80px; resize: vertical; }
-    .btn { padding: 12px 20px; border: none; border-radius: 8px; background: #38bdf8; color: black; font-weight: bold; cursor: pointer; margin-top: 8px; }
-    .btn:hover { background: #0ea5e9; }
-    .pdf-list li { background: #334155; margin: 10px 0; padding: 14px; border-radius: 8px; list-style: none; }
-    .chat-box { height: 300px; background: #020617; padding: 15px; border-radius: 10px; overflow-y: auto; margin-bottom: 15px; border: 1px solid #334155; }
-    .user-msg, .ai-msg, .system-msg { margin-bottom: 12px; line-height: 1.5; padding: 10px; border-radius: 8px; }
-    .user-msg { color: #e0f2fe; background: #075985; }
-    .ai-msg { color: #dcfce7; background: #166534; }
-    .system-msg { color: #fde68a; background: #78350f; }
-    .message { margin-top: 12px; font-weight: bold; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #0f172a;
+      color: white;
+      min-height: 100vh;
+    }
+
+    .dashboard {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 250px;
+      background: #020617;
+      padding: 25px;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+    }
+
+    .sidebar h2 {
+      color: #38bdf8;
+      margin-bottom: 30px;
+    }
+
+    .sidebar button {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 10px;
+      background: #1e293b;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .sidebar button:hover {
+      background: #38bdf8;
+      color: black;
+    }
+
+    .main {
+      flex: 1;
+      padding: 30px;
+    }
+
+    .topbar {
+      margin-bottom: 30px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.35);
+    }
+
+    .card h3 {
+      color: #cbd5e1;
+      margin-bottom: 10px;
+    }
+
+    .card h2 {
+      color: #38bdf8;
+      font-size: 34px;
+    }
+
+    .section {
+      background: #1e293b;
+      padding: 25px;
+      border-radius: 15px;
+      margin-bottom: 25px;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      margin: 10px 0;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      background: #38bdf8;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 8px;
+      margin-right: 8px;
+    }
+
+    .btn:hover {
+      background: #0ea5e9;
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+
+    .pdf-list li {
+      background: #334155;
+      margin: 10px 0;
+      padding: 14px;
+      border-radius: 8px;
+      list-style: none;
+    }
+
+    .chat-box {
+      height: 300px;
+      background: #020617;
+      padding: 15px;
+      border-radius: 10px;
+      overflow-y: auto;
+      margin-bottom: 15px;
+      border: 1px solid #334155;
+    }
+
+    .user-msg,
+    .ai-msg,
+    .system-msg {
+      margin-bottom: 12px;
+      line-height: 1.5;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .user-msg {
+      color: #e0f2fe;
+      background: #075985;
+    }
+
+    .ai-msg {
+      color: #dcfce7;
+      background: #166534;
+    }
+
+    .system-msg {
+      color: #fde68a;
+      background: #78350f;
+    }
+
+    .message {
+      margin-top: 12px;
+      font-weight: bold;
+    }
+
     @media (max-width: 900px) {
-      .dashboard { flex-direction: column; }
-      .sidebar { width: 100%; height: auto; position: relative; }
-      .cards { grid-template-columns: 1fr; }
+      .dashboard {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
+
 <body>
+
   <script>
     if (!localStorage.getItem("jwtToken")) {
       window.location.href = "index.html";
@@ -45,8 +210,10 @@
   </script>
 
   <div class="dashboard">
+
     <div class="sidebar">
       <h2>Research AI</h2>
+
       <button onclick="showSection('home')">Dashboard</button>
       <button onclick="showSection('upload')">Upload PDF</button>
       <button onclick="showSection('documents')">View PDFs</button>
@@ -55,61 +222,106 @@
     </div>
 
     <div class="main">
+
       <div class="topbar">
         <h1>Research Workspace Dashboard 🚀</h1>
         <p>Upload PDFs and ask questions using your RAG chat system.</p>
       </div>
 
       <div class="cards">
-        <div class="card"><h3>Total PDFs</h3><h2 id="pdfCount">0</h2></div>
-        <div class="card"><h3>AI Chats</h3><h2 id="chatCount">0</h2></div>
-        <div class="card"><h3>Status</h3><h2 id="systemStatus">Active</h2></div>
+        <div class="card">
+          <h3>Total PDFs</h3>
+          <h2 id="pdfCount">0</h2>
+        </div>
+
+        <div class="card">
+          <h3>AI Chats</h3>
+          <h2 id="chatCount">0</h2>
+        </div>
+
+        <div class="card">
+          <h3>Status</h3>
+          <h2 id="systemStatus">Active</h2>
+        </div>
       </div>
 
       <div id="home" class="section">
         <h2>Dashboard Overview</h2>
-        <p>This dashboard is connected to your backend. Upload PDFs, view uploaded files, and ask AI questions from those PDFs.</p>
+        <p>
+          This dashboard is connected to your backend.
+          Upload PDFs, view uploaded files, delete PDFs,
+          and ask AI questions from those PDFs.
+        </p>
       </div>
 
       <div id="upload" class="section" style="display:none;">
         <h2>Upload PDF for RAG</h2>
+
         <input type="file" id="pdfFile" accept="application/pdf" />
-        <button class="btn" onclick="uploadPDF()">Upload PDF</button>
+
+        <button class="btn" onclick="uploadPDF()">
+          Upload PDF
+        </button>
+
         <p class="message" id="uploadMsg"></p>
       </div>
 
       <div id="documents" class="section" style="display:none;">
         <h2>Uploaded PDFs</h2>
-        <button class="btn" onclick="loadPDFs()">Refresh List</button>
+
+        <button class="btn" onclick="loadPDFs()">
+          Refresh List
+        </button>
+
         <ul id="pdfList" class="pdf-list"></ul>
       </div>
 
       <div id="chat" class="section" style="display:none;">
         <h2>AI Chat Box</h2>
+
         <div class="chat-box" id="chatBox">
-          <p class="ai-msg">AI: Hello, upload a PDF and ask a question from it.</p>
+          <p class="ai-msg">
+            AI: Hello, upload a PDF and ask a question from it.
+          </p>
         </div>
-        <textarea id="userQuestion" placeholder="Example: Summarize this paper"></textarea>
-        <button class="btn" onclick="sendMessage()">Send Question</button>
+
+        <textarea
+          id="userQuestion"
+          placeholder="Example: Summarize this paper">
+        </textarea>
+
+        <button class="btn" onclick="sendMessage()">
+          Send Question
+        </button>
       </div>
+
     </div>
   </div>
 
   <script>
     const API_BASE_URL = "https://objective-1-geu2.onrender.com";
-    let chatCounter = Number(localStorage.getItem("chatCounter")) || 0;
+
+    let chatCounter =
+      Number(localStorage.getItem("chatCounter")) || 0;
 
     function getAuthHeaders() {
       const token = localStorage.getItem("jwtToken");
-      return token ? { Authorization: `Bearer ${token}` } : {};
+
+      return token
+        ? { Authorization: `Bearer ${token}` }
+        : {};
     }
 
     function showSection(id) {
       document.querySelectorAll(".section").forEach((sec) => {
         sec.style.display = "none";
       });
+
       document.getElementById(id).style.display = "block";
-      if (id === "documents") loadPDFs();
+
+      if (id === "documents") {
+        loadPDFs();
+      }
     }
 
     async function uploadPDF() {
@@ -137,27 +349,38 @@
         msg.style.color = "#38bdf8";
         msg.innerText = "Uploading and processing PDF...";
 
-        const response = await fetch(`${API_BASE_URL}/api/documents/upload`, {
-          method: "POST",
-          headers: getAuthHeaders(),
-          body: formData
-        });
+        const response = await fetch(
+          `${API_BASE_URL}/api/documents/upload`,
+          {
+            method: "POST",
+            headers: getAuthHeaders(),
+            body: formData
+          }
+        );
 
         const data = await response.json();
 
         if (response.ok) {
           msg.style.color = "#22c55e";
-          msg.innerText = data.message || "PDF uploaded and processed successfully ✅";
+          msg.innerText =
+            data.message ||
+            "PDF uploaded and processed successfully ✅";
+
           fileInput.value = "";
           await loadPDFs();
         } else {
           msg.style.color = "#ef4444";
-          msg.innerText = data.message || data.error || "Upload failed ❌";
+          msg.innerText =
+            data.message ||
+            data.error ||
+            "Upload failed ❌";
         }
       } catch (error) {
         console.error(error);
+
         msg.style.color = "#ef4444";
-        msg.innerText = "Backend connection failed during upload ❌";
+        msg.innerText =
+          "Backend connection failed during upload ❌";
       }
     }
 
@@ -167,71 +390,211 @@
       try {
         list.innerHTML = "<li>Loading PDFs...</li>";
 
-        const response = await fetch(`${API_BASE_URL}/api/documents`, {
-          headers: { ...getAuthHeaders() }
-        });
+        const response = await fetch(
+          `${API_BASE_URL}/api/documents`,
+          {
+            headers: {
+              ...getAuthHeaders()
+            }
+          }
+        );
 
         const data = await response.json();
-        const docs = Array.isArray(data) ? data : data.documents || [];
 
-        document.getElementById("pdfCount").innerText = docs.length;
+        const docs = Array.isArray(data)
+          ? data
+          : data.documents || [];
+
+        document.getElementById("pdfCount").innerText =
+          docs.length;
 
         if (docs.length === 0) {
-          list.innerHTML = "<li>No PDFs uploaded yet.</li>";
+          list.innerHTML =
+            "<li>No PDFs uploaded yet.</li>";
           return;
         }
 
         list.innerHTML = "";
 
         docs.forEach((doc) => {
-          const fileName = doc.fileName || doc.filename || doc.name || "Untitled PDF";
-          const createdAt = doc.createdAt ? new Date(doc.createdAt).toLocaleString() : "Unknown date";
+          const fileName =
+            doc.fileName ||
+            doc.filename ||
+            doc.name ||
+            "Untitled PDF";
+
+          const createdAt = doc.createdAt
+            ? new Date(doc.createdAt).toLocaleString()
+            : "Unknown date";
+
           const chunks = doc.chunks ? doc.chunks.length : 0;
+
+          const fileUrl = `${API_BASE_URL}/${doc.filePath}`;
 
           list.innerHTML += `
             <li>
               <strong>${escapeHTML(fileName)}</strong><br>
               Uploaded: ${createdAt}<br>
-              Text Chunks: ${chunks}
+              Text Chunks: ${chunks}<br><br>
+
+              <button
+                class="btn"
+                onclick="openPDF('${fileUrl}')">
+                Open PDF
+              </button>
+
+              <button
+                class="btn btn-danger"
+                onclick="deletePDF('${doc._id}')">
+                Delete PDF
+              </button>
             </li>
           `;
         });
       } catch (error) {
         console.error(error);
-        list.innerHTML = "<li>Failed to load PDFs ❌</li>";
+
+        list.innerHTML =
+          "<li>Failed to load PDFs ❌</li>";
+      }
+    }
+
+    function openPDF(fileUrl) {
+      window.open(fileUrl, "_blank");
+    }
+
+    async function deletePDF(id) {
+      const confirmDelete =
+        confirm("Are you sure you want to delete this PDF?");
+
+      if (!confirmDelete) return;
+
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/api/documents/${id}`,
+          {
+            method: "DELETE",
+            headers: {
+              ...getAuthHeaders()
+            }
+          }
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert(
+            data.message ||
+            "PDF deleted successfully ✅"
+          );
+
+          loadPDFs();
+        } else {
+          alert(
+            data.message ||
+            "PDF delete failed ❌"
+          );
+        }
+      } catch (error) {
+        console.error(error);
+
+        alert(
+          "Backend connection failed while deleting PDF ❌"
+        );
       }
     }
 
     async function sendMessage() {
-  const question = document.getElementById("userQuestion").value;
-  const chatBox = document.getElementById("chatBox");
+      const questionInput =
+        document.getElementById("userQuestion");
 
-  if (!question.trim()) return;
+      const question = questionInput.value.trim();
 
-  chatBox.innerHTML += `<p class="user-msg">You: ${question}</p>`;
+      const chatBox =
+        document.getElementById("chatBox");
 
-  const response = await fetch(
-    "https://objective-1-geu2.onrender.com/api/chat/ask",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        message: question
-      })
+      if (!question) return;
+
+      chatBox.innerHTML += `
+        <p class="user-msg">
+          You: ${escapeHTML(question)}
+        </p>
+      `;
+
+      chatBox.innerHTML += `
+        <p class="system-msg" id="typingMsg">
+          AI is thinking...
+        </p>
+      `;
+
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/api/chat/ask`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              ...getAuthHeaders()
+            },
+            body: JSON.stringify({
+              message: question
+            })
+          }
+        );
+
+        const data = await response.json();
+
+        const typingMsg =
+          document.getElementById("typingMsg");
+
+        if (typingMsg) typingMsg.remove();
+
+        const answer =
+          data.aiResponse ||
+          data.answer ||
+          data.reply ||
+          "No answer received from backend.";
+
+        chatBox.innerHTML += `
+          <p class="ai-msg">
+            AI: ${escapeHTML(answer)}
+          </p>
+        `;
+
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        chatCounter++;
+
+        localStorage.setItem(
+          "chatCounter",
+          chatCounter
+        );
+
+        updateCounts();
+
+      } catch (error) {
+        console.error(error);
+
+        const typingMsg =
+          document.getElementById("typingMsg");
+
+        if (typingMsg) typingMsg.remove();
+
+        chatBox.innerHTML += `
+          <p class="ai-msg">
+            AI: Backend connection failed ❌
+          </p>
+        `;
+      }
+
+      questionInput.value = "";
     }
-  );
 
-  const data = await response.json();
-
-  chatBox.innerHTML += `<p class="ai-msg">AI: ${data.aiResponse}</p>`;
-  chatBox.scrollTop = chatBox.scrollHeight;
-
-  document.getElementById("userQuestion").value = "";
-}
     function updateCounts() {
-      document.getElementById("chatCount").innerText = chatCounter;
+      document.getElementById("chatCount").innerText =
+        chatCounter;
     }
 
     function escapeHTML(text) {
@@ -246,11 +609,13 @@
     function logout() {
       localStorage.removeItem("jwtToken");
       localStorage.removeItem("user");
+
       window.location.href = "index.html";
     }
 
     updateCounts();
     loadPDFs();
   </script>
+
 </body>
 </html>
