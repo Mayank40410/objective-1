@@ -1,46 +1,46 @@
 import express from "express";
+import Document from "../models/Document.js";
 
 const router = express.Router();
 
-
-/*
- Chat API
- POST /api/chat/ask
-*/
-
-router.post("/ask", (req, res) => {
-
+router.post("/ask", async (req, res) => {
+  try {
     const { message } = req.body;
 
-    res.json({
+    const documents = await Document.find();
 
-        userMessage: message,
+    let matchedChunks = [];
 
-        aiResponse:
-        "AI response will appear here. Future RAG integration ready 🚀"
+    documents.forEach((doc) => {
+      doc.chunks.forEach((chunk) => {
+        const words = message.toLowerCase().split(" ");
 
+        const isMatch = words.some((word) =>
+          chunk.toLowerCase().includes(word)
+        );
+
+        if (isMatch) {
+          matchedChunks.push(chunk);
+        }
+      });
     });
 
-});
-
-
-/*
- Chat History API
- GET /api/chat/history
-*/
-
-router.get("/history", (req,res)=>{
+    if (matchedChunks.length === 0) {
+      return res.json({
+        aiResponse: "No related information found in uploaded PDFs."
+      });
+    }
 
     res.json({
-
-        message:
-        "Conversation history fetched successfully",
-
-        conversations: []
-
+      aiResponse: matchedChunks.slice(0, 2).join(" ")
     });
 
+  } catch (error) {
+    res.status(500).json({
+      message: "Chat failed",
+      error: error.message
+    });
+  }
 });
-
 
 export default router;
