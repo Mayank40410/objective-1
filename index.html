@@ -5,102 +5,98 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Secure Authentication Dashboard</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <header class="hero">
-    <nav class="navbar">
-      <h1 class="logo">AuthSecure</h1>
-      <button class="nav-btn">Get Started</button>
-    </nav>
+  <nav class="navbar">
+    <h1 class="logo">AuthSecure</h1>
+    <button class="get-started" onclick="openRegisterModal()">Get Started</button>
+  </nav>
+
+  <section class="hero">
 
     <div class="hero-content">
-      <div class="hero-text">
-        <h2>Secure User Authentication & Workspace Management</h2>
-        <p>
-          A modern frontend design for managing user authentication,
-          secure login sessions, dashboards, and protected workspaces.
-        </p>
 
-        <div class="hero-buttons">
-          <button class="primary-btn" onclick="showMessage()">Explore Features</button>
-          <button class="secondary-btn">Documentation</button>
-          <button class="login-btn" onclick="openLoginModal()">Login</button>
-          <button class="register-btn" onclick="openRegisterModal()">Register</button>
+      <div class="ai-badge">
+        🤖 AI Powered Research Workspace
+      </div>
+
+      <h1>
+        Secure User Authentication &
+        <span id="typingText"></span>
+      </h1>
+
+      <p>
+        A modern full-stack authentication and research workspace system with
+        JWT login, MongoDB database, PDF upload, AI chat, and protected dashboard.
+      </p>
+
+      <div class="buttons">
+        <button class="btn btn-blue" onclick="showMessageAleart()">Explore Features</button>
+        <button class="btn btn-outline">Documentation</button>
+        <button class="btn btn-green" onclick="openLoginModal()">Login</button>
+        <button class="btn btn-orange" onclick="openRegisterModal()">Register</button>
+      </div>
+
+      <div class="quick-stats">
+        <div>
+          <h2>JWT</h2>
+          <p>Secure Auth</p>
+        </div>
+
+        <div>
+          <h2>PDF</h2>
+          <p>RAG Upload</p>
+        </div>
+
+        <div>
+          <h2>AI</h2>
+          <p>Smart Chat</p>
         </div>
       </div>
 
-      <div class="hero-card">
-        <div class="glass-card">
-          <h3>System Status</h3>
-          <div class="status success">Authentication Active</div>
-          <div class="status">JWT Security Enabled</div>
-          <div class="status">Database Connected</div>
-        </div>
-      </div>
     </div>
-  </header>
+
+    <div class="status-card">
+      <h2>System Status</h2>
+
+      <div class="status-item">Authentication Active</div>
+      <div class="status-item">JWT Security Enabled</div>
+      <div class="status-item">Database Connected</div>
+      <div class="status-item">AI Dashboard Ready</div>
+    </div>
+
+  </section>
 
   <section class="features">
-    <h2 class="section-title">Core Features</h2>
+    <div class="feature-card">
+      <h3>🔐 JWT Authentication</h3>
+      <p>Secure login and registration system connected with backend API.</p>
+    </div>
 
-    <div class="feature-grid">
-      <div class="feature-card">
-        <div class="icon">🔐</div>
-        <h3>Secure Login</h3>
-        <p>Multi-layer authentication with encrypted credentials.</p>
-      </div>
+    <div class="feature-card">
+      <h3>📄 PDF Research Workspace</h3>
+      <p>Upload PDFs, view uploaded files, and manage research documents.</p>
+    </div>
 
-      <div class="feature-card">
-        <div class="icon">⚡</div>
-        <h3>Fast Performance</h3>
-        <p>Optimized frontend experience with responsive design.</p>
-      </div>
-
-      <div class="feature-card">
-        <div class="icon">📊</div>
-        <h3>Dashboard Analytics</h3>
-        <p>Track user activity and workspace management in real time.</p>
-      </div>
-
-      <div class="feature-card">
-        <div class="icon">☁️</div>
-        <h3>Cloud Integration</h3>
-        <p>Sync data securely across devices and platforms.</p>
-      </div>
+    <div class="feature-card">
+      <h3>🤖 AI Chat Assistant</h3>
+      <p>Ask questions and get AI-powered responses from your dashboard.</p>
     </div>
   </section>
 
-  <section class="stats">
-    <div class="stat-box">
-      <h3>99.9%</h3>
-      <p>System Uptime</p>
-    </div>
-
-    <div class="stat-box">
-      <h3>256-bit</h3>
-      <p>Encryption</p>
-    </div>
-
-    <div class="stat-box">
-      <h3>24/7</h3>
-      <p>Monitoring</p>
-    </div>
-  </section>
-
-    <!-- Login Modal -->
+  <!-- Login Modal -->
   <div class="modal" id="loginModal">
     <div class="modal-content">
-      <span class="close-btn" onclick="closeLoginModal()">&times;</span>
+      <span class="close" onclick="closeLoginModal()">&times;</span>
+
       <h2>Login</h2>
 
       <form id="loginForm">
-        <input type="email" id="email" placeholder="Enter Email" required>
-        <input type="password" id="password" placeholder="Enter Password" required>
-        <button type="submit" class="submit-btn">Login</button>
+        <input type="email" id="email" placeholder="Enter Email" required />
+        <input type="password" id="password" placeholder="Enter Password" required />
+
+        <button type="submit">Login</button>
       </form>
 
       <p id="loginMessage"></p>
@@ -110,57 +106,25 @@
   <!-- Register Modal -->
   <div class="modal" id="registerModal">
     <div class="modal-content">
-      <span class="close-btn" onclick="closeRegisterModal()">&times;</span>
+      <span class="close" onclick="closeRegisterModal()">&times;</span>
+
       <h2>Create Account</h2>
 
       <form id="registerForm">
-        <input type="text" id="registerName" placeholder="Full Name" required>
-        <input type="email" id="registerEmail" placeholder="Email Address" required>
-        <input type="password" id="registerPassword" placeholder="Create Password" required>
-        <button type="submit" class="submit-btn">Register</button>
+        <input type="text" id="registerName" placeholder="Enter Name" required />
+        <input type="email" id="registerEmail" placeholder="Enter Email" required />
+        <input type="password" id="registerPassword" placeholder="Enter Password" required />
+
+        <button type="submit">Register</button>
       </form>
 
-      <div class="social-login">
-        <button class="google-btn" onclick="googleLogin()">Sign in with Google</button>
-        <button class="github-btn" onclick="githubLogin()">Sign in with GitHub</button>
-      </div>
+      <button onclick="googleLogin()">Sign in with Google</button>
+      <button onclick="githubLogin()">Sign in with GitHub</button>
 
       <p id="registerMessage"></p>
     </div>
   </div>
 
-  <footer>
-    <p>© 2026 Secure Authentication Frontend Design | Developed for Objective 1</p>
-  </footer>
-
   <script src="script.js"></script>
-  <script src="app.js"></script>
-  <script src="login.js"></script>
-  <script src="register.js"></script>
-  <script src="api.js"></script>
-  <script src="authcontroller.js"></script>
-  <script src="authmiddleware.js"></script>
-  <script src="authroute.js"></script>
-  <script src="db.js"></script>
-  <script src="server.js"></script>
-  <script src="user.js"></script>
-
-  <section class="features">
-  <div class="feature-card">
-    <h3>🔐 JWT Authentication</h3>
-    <p>Secure login and register system using backend authentication.</p>
-  </div>
-
-  <div class="feature-card">
-    <h3>📄 Research Workspace</h3>
-    <p>Upload PDFs, manage documents, and organize research files.</p>
-  </div>
-
-  <div class="feature-card">
-    <h3>🤖 AI Chat Assistant</h3>
-    <p>Ask questions and get AI-powered responses from your dashboard.</p>
-  </div>
-</section>
-
 </body>
 </html>
