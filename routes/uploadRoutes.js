@@ -1,43 +1,81 @@
 import express from "express";
 import multer from "multer";
 import fs from "fs";
+import path from "path";
 import { PDFParse } from "pdf-parse";
+import mammoth from "mammoth";
 import Document from "../models/Document.js";
 
 const router = express.Router();
 
 const uploadFolder = "uploads";
+const rawTextFolder = "documents/raw_text";
+const metadataFolder = "documents/metadata";
 
-if (!fs.existsSync(uploadFolder)) {
-  fs.mkdirSync(uploadFolder, { recursive: true });
-}
+[uploadFolder, rawTextFolder, metadataFolder].forEach((folder) => {
+  if (!fs.existsSync(folder)) {
+    fs.mkdirSync(folder, { recursive: true });
+  }
+});
 
 const storage = multer.diskStorage({
   destination: uploadFolder,
+
   filename: (req, file, cb) => {
-    const safeFileName = file.originalname.replace(/\s+/g, "-");
-    cb(null, Date.now() + "-" + safeFileName);
+    const safeName = file.originalname.replace(/\s+/g, "-");
+    cb(null, Date.now() + "-" + safeName);
   }
 });
 
 const upload = multer({
   storage,
+
+  limits: {
+    fileSize: 10 * 1024 * 1024
+  },
+
   fileFilter: (req, file, cb) => {
-    if (file.mimetype === "application/pdf") {
+    const allowedTypes = [
+      "application/pdf",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "text/plain"
+    ];
+
+    if (allowedTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error("Only PDF files are allowed"));
+      cb(new Error("Only PDF, DOCX, and TXT files are allowed"));
     }
   }
 });
 
+function cleanText(rawText = "") {
+  let text = String(rawText);
+
+  text = text.normalize("NFKD");
+  text = text.replace(/https?:\/\/\S+/g, "");
+  text = text.replace(/\S+@\S+\.\S+/g, "");
+  text = text.replace(/Page\s+\d+/gi, "");
+  text = text.replace(/[-_]{3,}/g, "");
+  text = text.replace(/[^a-zA-Z0-9\s.,!?;:()\-'"\/]/g, "");
+  text = text.replace(/\n+/g, " ");
+  text = text.replace(/\s+/g, " ");
+
+  return text.trim();
+}
+
 function splitText(text) {
-  const cleanedText = text.replace(/\s+/g, " ").trim();
-  const words = cleanedText.split(" ");
+  const cleanTextValue = text.replace(/\s+/g, " ").trim();
+
+  if (!cleanTextValue) {
+    return [];
+  }
+
+  const words = cleanTextValue.split(" ");
   const chunks = [];
 
-  for (let i = 0; i < words.length; i += 120) {
-    const chunk = words.slice(i, i + 120).join(" ");
+  for (let i = 0; i < words.length; i += 150) {
+    const chunk = words.slice(i, i + 150).join(" ");
 
     if (chunk.trim()) {
       chunks.push(chunk);
@@ -47,51 +85,151 @@ function splitText(text) {
   return chunks;
 }
 
-router.post("/upload", upload.single("pdf"), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({
-        message: "No PDF file uploaded"
-      });
-    }
-
-    const dataBuffer = fs.readFileSync(req.file.path);
+async function extractText(filePath, fileType) {
+  if (fileType === "pdf") {
+    const buffer = fs.readFileSync(filePath);
 
     const parser = new PDFParse({
-      data: dataBuffer
+      data: buffer
     });
 
-    const result = await parser.getText();
+    const data = await parser.getText();
 
     await parser.destroy();
 
-    const extractedText = result.text || "";
+    return {
+      text: data.text || "",
+      pageCount: data.total || 0,
+      metadata: {}
+    };
+  }
 
-    if (!extractedText.trim()) {
+  if (fileType === "docx") {
+    const result = await mammoth.extractRawText({
+      path: filePath
+    });
+
+    return {
+      text: result.value || "",
+      pageCount: 0,
+      metadata: {}
+    };
+  }
+
+  if (fileType === "txt") {
+    const text = fs.readFileSync(filePath, "utf-8");
+
+    return {
+      text,
+      pageCount: 0,
+      metadata: {}
+    };
+  }
+
+  return {
+    text: "",
+    pageCount: 0,
+    metadata: {}
+  };
+}
+
+router.post("/upload", upload.single("document"), async (req, res) => {
+  try {
+    if (!req.file) {
       return res.status(400).json({
-        message: "PDF uploaded, but no readable text was found"
+        message: "No document uploaded"
       });
     }
 
+    const extension = path
+      .extname(req.file.originalname)
+      .toLowerCase()
+      .replace(".", "");
+
+    const duplicate = await Document.findOne({
+      originalName: req.file.originalname,
+      fileSize: req.file.size
+    });
+
+    const extracted = await extractText(req.file.path, extension);
+
+    const rawText = extracted.text || "";
+    const extractedText = cleanText(rawText);
     const chunks = splitText(extractedText);
 
-    const document = await Document.create({
-      fileName: req.file.originalname,
-      filePath: req.file.path,
+    const isEmptyText = extractedText.trim().length === 0;
+
+    const baseName = req.file.originalname.replace(/\.[^/.]+$/, "");
+    const timeStamp = Date.now();
+
+    const cleanTextPath = path.join(
+      rawTextFolder,
+      `${timeStamp}-${baseName}-clean.txt`
+    );
+
+    fs.writeFileSync(cleanTextPath, extractedText, "utf-8");
+
+    const metadataObject = {
+      title:
+        extracted.metadata?.Title ||
+        req.file.originalname.replace(/\.[^/.]+$/, ""),
+
+      authors:
+        extracted.metadata?.Author ||
+        extracted.metadata?.Creator ||
+        "Not Available",
+
+      fileType: extension,
       fileSize: req.file.size,
-      chunks
+      pageCount: extracted.pageCount,
+      textLength: extractedText.length,
+      cleanTextPath: cleanTextPath.replace(/\\/g, "/")
+    };
+
+    const metadataPath = path.join(
+      metadataFolder,
+      `${timeStamp}-${baseName}-metadata.json`
+    );
+
+    fs.writeFileSync(
+      metadataPath,
+      JSON.stringify(metadataObject, null, 2),
+      "utf-8"
+    );
+
+    const document = await Document.create({
+      fileName: req.file.filename,
+      originalName: req.file.originalname,
+      fileType: extension,
+      fileSize: req.file.size,
+      filePath: req.file.path.replace(/\\/g, "/"),
+      cleanTextPath: cleanTextPath.replace(/\\/g, "/"),
+      metadataPath: metadataPath.replace(/\\/g, "/"),
+
+      title: metadataObject.title,
+      authors: metadataObject.authors,
+      pageCount: extracted.pageCount,
+      textLength: extractedText.length,
+      chunks,
+
+      qualityReport: {
+        extractionSuccess: !isEmptyText,
+        emptyText: isEmptyText,
+        scannedPdfPossible: extension === "pdf" && isEmptyText,
+        duplicateFile: Boolean(duplicate)
+      }
     });
 
     res.status(201).json({
-      message: "PDF uploaded and processed successfully",
+      message: "Document uploaded, cleaned, and processed successfully",
       document
     });
 
   } catch (error) {
-    console.error("PDF Upload Error:", error);
+    console.error("Document Upload Error:", error);
 
     res.status(500).json({
-      message: "PDF processing failed",
+      message: "Document processing failed",
       error: error.message
     });
   }
@@ -113,7 +251,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.get("/:id/metadata", async (req, res) => {
   try {
     const document = await Document.findById(req.params.id);
 
@@ -123,19 +261,22 @@ router.delete("/:id", async (req, res) => {
       });
     }
 
-    if (document.filePath && fs.existsSync(document.filePath)) {
-      fs.unlinkSync(document.filePath);
-    }
-
-    await Document.findByIdAndDelete(req.params.id);
-
     res.json({
-      message: "Document deleted successfully"
+      title: document.title,
+      authors: document.authors,
+      fileType: document.fileType,
+      fileSize: document.fileSize,
+      pageCount: document.pageCount,
+      textLength: document.textLength,
+      cleanTextPath: document.cleanTextPath,
+      metadataPath: document.metadataPath,
+      qualityReport: document.qualityReport,
+      uploadDate: document.createdAt
     });
 
   } catch (error) {
     res.status(500).json({
-      message: "Document deletion failed",
+      message: "Metadata fetch failed",
       error: error.message
     });
   }
@@ -155,14 +296,23 @@ router.delete("/:id", async (req, res) => {
       fs.unlinkSync(document.filePath);
     }
 
+    if (document.cleanTextPath && fs.existsSync(document.cleanTextPath)) {
+      fs.unlinkSync(document.cleanTextPath);
+    }
+
+    if (document.metadataPath && fs.existsSync(document.metadataPath)) {
+      fs.unlinkSync(document.metadataPath);
+    }
+
     await Document.findByIdAndDelete(req.params.id);
 
     res.json({
-      message: "PDF deleted successfully"
+      message: "Document deleted successfully"
     });
+
   } catch (error) {
     res.status(500).json({
-      message: "PDF delete failed",
+      message: "Document deletion failed",
       error: error.message
     });
   }

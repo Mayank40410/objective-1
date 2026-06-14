@@ -6,203 +6,44 @@
   <title>Research Workspace Dashboard</title>
 
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
-
-    body {
-      background: #0f172a;
-      color: white;
-      min-height: 100vh;
-    }
-
-    .dashboard {
-      display: flex;
-      min-height: 100vh;
-    }
-
-    .sidebar {
-      width: 250px;
-      background: #020617;
-      padding: 25px;
-      height: 100vh;
-      position: sticky;
-      top: 0;
-    }
-
-    .sidebar h2 {
-      color: #38bdf8;
-      margin-bottom: 30px;
-    }
-
-    .sidebar button {
-      display: block;
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 15px;
-      border: none;
-      border-radius: 10px;
-      background: #1e293b;
-      color: white;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .sidebar button:hover {
-      background: #38bdf8;
-      color: black;
-    }
-
-    .main {
-      flex: 1;
-      padding: 30px;
-    }
-
-    .topbar {
-      margin-bottom: 30px;
-    }
-
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-
-    .card {
-      background: #1e293b;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.35);
-    }
-
-    .card h3 {
-      color: #cbd5e1;
-      margin-bottom: 10px;
-    }
-
-    .card h2 {
-      color: #38bdf8;
-      font-size: 34px;
-    }
-
-    .section {
-      background: #1e293b;
-      padding: 25px;
-      border-radius: 15px;
-      margin-bottom: 25px;
-    }
-
-    input,
-    textarea {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      border: none;
-      margin: 10px 0;
-      outline: none;
-    }
-
-    textarea {
-      min-height: 80px;
-      resize: vertical;
-    }
-
-    .btn {
-      padding: 12px 20px;
-      border: none;
-      border-radius: 8px;
-      background: #38bdf8;
-      color: black;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 8px;
-      margin-right: 8px;
-    }
-
-    .btn:hover {
-      background: #0ea5e9;
-    }
-
-    .btn-danger {
-      background: #ef4444;
-      color: white;
-    }
-
-    .btn-danger:hover {
-      background: #dc2626;
-    }
-
-    .pdf-list li {
-      background: #334155;
-      margin: 10px 0;
-      padding: 14px;
-      border-radius: 8px;
-      list-style: none;
-    }
-
-    .chat-box {
-      height: 300px;
-      background: #020617;
-      padding: 15px;
-      border-radius: 10px;
-      overflow-y: auto;
-      margin-bottom: 15px;
-      border: 1px solid #334155;
-    }
-
-    .user-msg,
-    .ai-msg,
-    .system-msg {
-      margin-bottom: 12px;
-      line-height: 1.5;
-      padding: 10px;
-      border-radius: 8px;
-    }
-
-    .user-msg {
-      color: #e0f2fe;
-      background: #075985;
-    }
-
-    .ai-msg {
-      color: #dcfce7;
-      background: #166534;
-    }
-
-    .system-msg {
-      color: #fde68a;
-      background: #78350f;
-    }
-
-    .message {
-      margin-top: 12px;
-      font-weight: bold;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+    body { background: #0f172a; color: white; min-height: 100vh; }
+    .dashboard { display: flex; min-height: 100vh; }
+    .sidebar { width: 250px; background: #020617; padding: 25px; height: 100vh; position: sticky; top: 0; }
+    .sidebar h2 { color: #38bdf8; margin-bottom: 30px; }
+    .sidebar button { display: block; width: 100%; padding: 12px; margin-bottom: 15px; border: none; border-radius: 10px; background: #1e293b; color: white; cursor: pointer; font-weight: bold; }
+    .sidebar button:hover { background: #38bdf8; color: black; }
+    .main { flex: 1; padding: 30px; }
+    .topbar { margin-bottom: 30px; }
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+    .card { background: #1e293b; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.35); }
+    .card h3 { color: #cbd5e1; margin-bottom: 10px; }
+    .card h2 { color: #38bdf8; font-size: 34px; }
+    .section { background: #1e293b; padding: 25px; border-radius: 15px; margin-bottom: 25px; }
+    input, textarea { width: 100%; padding: 12px; border-radius: 8px; border: none; margin: 10px 0; outline: none; }
+    textarea { min-height: 80px; resize: vertical; }
+    .btn { padding: 12px 20px; border: none; border-radius: 8px; background: #38bdf8; color: black; font-weight: bold; cursor: pointer; margin-top: 8px; margin-right: 8px; }
+    .btn:hover { background: #0ea5e9; }
+    .btn-danger { background: #ef4444; color: white; }
+    .btn-danger:hover { background: #dc2626; }
+    .pdf-list li { background: #334155; margin: 10px 0; padding: 14px; border-radius: 8px; list-style: none; line-height: 1.6; }
+    .chat-box { height: 300px; background: #020617; padding: 15px; border-radius: 10px; overflow-y: auto; margin-bottom: 15px; border: 1px solid #334155; }
+    .user-msg, .ai-msg, .system-msg { margin-bottom: 12px; line-height: 1.5; padding: 10px; border-radius: 8px; }
+    .user-msg { color: #e0f2fe; background: #075985; }
+    .ai-msg { color: #dcfce7; background: #166534; }
+    .system-msg { color: #fde68a; background: #78350f; }
+    .message { margin-top: 12px; font-weight: bold; }
+    .tag { display: inline-block; padding: 4px 9px; border-radius: 999px; background: #0f172a; color: #38bdf8; font-size: 13px; margin-top: 6px; margin-right: 6px; }
 
     @media (max-width: 900px) {
-      .dashboard {
-        flex-direction: column;
-      }
-
-      .sidebar {
-        width: 100%;
-        height: auto;
-        position: relative;
-      }
-
-      .cards {
-        grid-template-columns: 1fr;
-      }
+      .dashboard { flex-direction: column; }
+      .sidebar { width: 100%; height: auto; position: relative; }
+      .cards { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 
 <body>
-
   <script>
     if (!localStorage.getItem("jwtToken")) {
       window.location.href = "index.html";
@@ -210,39 +51,25 @@
   </script>
 
   <div class="dashboard">
-
     <div class="sidebar">
       <h2>Research AI</h2>
-
       <button onclick="showSection('home')">Dashboard</button>
-      <button onclick="showSection('upload')">Upload PDF</button>
-      <button onclick="showSection('documents')">View PDFs</button>
+      <button onclick="showSection('upload')">Upload Document</button>
+      <button onclick="showSection('documents')">View Documents</button>
       <button onclick="showSection('chat')">AI Chat</button>
       <button onclick="logout()">Logout</button>
     </div>
 
     <div class="main">
-
       <div class="topbar">
         <h1>Research Workspace Dashboard 🚀</h1>
-        <p>Local LLM powered dashboard using Ollama.</p>
+        <p>Local LLM powered dashboard using Ollama with PDF, DOCX and TXT document processing.</p>
       </div>
 
       <div class="cards">
-        <div class="card">
-          <h3>Total PDFs</h3>
-          <h2 id="pdfCount">0</h2>
-        </div>
-
-        <div class="card">
-          <h3>AI Chats</h3>
-          <h2 id="chatCount">0</h2>
-        </div>
-
-        <div class="card">
-          <h3>Status</h3>
-          <h2 id="systemStatus">Local AI</h2>
-        </div>
+        <div class="card"><h3>Total Documents</h3><h2 id="pdfCount">0</h2></div>
+        <div class="card"><h3>AI Chats</h3><h2 id="chatCount">0</h2></div>
+        <div class="card"><h3>Status</h3><h2 id="systemStatus">Local AI</h2></div>
       </div>
 
       <div id="home" class="section">
@@ -252,63 +79,45 @@
           <strong>http://localhost:5000</strong>.
           Your backend connects to Ollama local LLM.
         </p>
+        <br>
+        <p>
+          Features added: document upload, file validation, metadata view,
+          quality report, document repository, and AI chat with extracted text.
+        </p>
       </div>
 
       <div id="upload" class="section" style="display:none;">
-        <h2>Upload PDF for RAG</h2>
-
-        <input type="file" id="pdfFile" accept="application/pdf" />
-
-        <button class="btn" onclick="uploadPDF()">
-          Upload PDF
-        </button>
-
+        <h2>Upload Document for Processing</h2>
+        <p>Allowed formats: PDF, DOCX, TXT</p>
+        <input type="file" id="pdfFile" accept=".pdf,.docx,.txt" />
+        <button class="btn" onclick="uploadPDF()">Upload Document</button>
         <p class="message" id="uploadMsg"></p>
       </div>
 
       <div id="documents" class="section" style="display:none;">
-        <h2>Uploaded PDFs</h2>
-
-        <button class="btn" onclick="loadPDFs()">
-          Refresh List
-        </button>
-
+        <h2>Uploaded Documents</h2>
+        <button class="btn" onclick="loadPDFs()">Refresh List</button>
         <ul id="pdfList" class="pdf-list"></ul>
       </div>
 
       <div id="chat" class="section" style="display:none;">
         <h2>AI Chat Box</h2>
-
         <div class="chat-box" id="chatBox">
-          <p class="ai-msg">
-            AI: Hello, I am your local AI assistant. Ask me anything.
-          </p>
+          <p class="ai-msg">AI: Hello, I am your local AI assistant. Upload documents and ask me anything.</p>
         </div>
-
-        <textarea
-          id="userQuestion"
-          placeholder="Example: What is LLM?">
-        </textarea>
-
-        <button class="btn" onclick="sendMessage()">
-          Send Question
-        </button>
+        <textarea id="userQuestion" placeholder="Example: Summarize my uploaded document"></textarea>
+        <button class="btn" onclick="sendMessage()">Send Question</button>
       </div>
-
     </div>
   </div>
 
   <script>
     const API_BASE_URL = "http://localhost:5000";
-
     let chatCounter = Number(localStorage.getItem("chatCounter")) || 0;
 
     function getAuthHeaders() {
       const token = localStorage.getItem("jwtToken");
-
-      return token
-        ? { Authorization: `Bearer ${token}` }
-        : {};
+      return token ? { Authorization: `Bearer ${token}` } : {};
     }
 
     function showSection(id) {
@@ -329,24 +138,30 @@
 
       if (!fileInput.files[0]) {
         msg.style.color = "#ef4444";
-        msg.innerText = "Please select a PDF file.";
+        msg.innerText = "Please select a document file.";
         return;
       }
 
       const file = fileInput.files[0];
 
-      if (file.type !== "application/pdf") {
+      const allowedTypes = [
+        "application/pdf",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "text/plain"
+      ];
+
+      if (!allowedTypes.includes(file.type)) {
         msg.style.color = "#ef4444";
-        msg.innerText = "Only PDF files are allowed.";
+        msg.innerText = "Only PDF, DOCX, and TXT files are allowed.";
         return;
       }
 
       const formData = new FormData();
-      formData.append("pdf", file);
+      formData.append("document", file);
 
       try {
         msg.style.color = "#38bdf8";
-        msg.innerText = "Uploading and processing PDF...";
+        msg.innerText = "Uploading and processing document...";
 
         const response = await fetch(`${API_BASE_URL}/api/documents/upload`, {
           method: "POST",
@@ -358,22 +173,17 @@
 
         if (response.ok) {
           msg.style.color = "#22c55e";
-          msg.innerText =
-            data.message || "PDF uploaded and processed successfully ✅";
-
+          msg.innerText = data.message || "Document uploaded and processed successfully ✅";
           fileInput.value = "";
           await loadPDFs();
         } else {
           msg.style.color = "#ef4444";
-          msg.innerText =
-            data.message || data.error || "Upload failed ❌";
+          msg.innerText = data.message || data.error || "Upload failed ❌";
         }
       } catch (error) {
         console.error(error);
-
         msg.style.color = "#ef4444";
-        msg.innerText =
-          "Backend connection failed during upload ❌";
+        msg.innerText = "Backend connection failed during upload ❌";
       }
     }
 
@@ -381,7 +191,7 @@
       const list = document.getElementById("pdfList");
 
       try {
-        list.innerHTML = "<li>Loading PDFs...</li>";
+        list.innerHTML = "<li>Loading documents...</li>";
 
         const response = await fetch(`${API_BASE_URL}/api/documents`, {
           headers: {
@@ -398,7 +208,7 @@
         document.getElementById("pdfCount").innerText = docs.length;
 
         if (docs.length === 0) {
-          list.innerHTML = "<li>No PDFs uploaded yet.</li>";
+          list.innerHTML = "<li>No documents uploaded yet.</li>";
           return;
         }
 
@@ -406,43 +216,40 @@
 
         docs.forEach((doc) => {
           const fileName =
+            doc.originalName ||
             doc.fileName ||
             doc.filename ||
             doc.name ||
-            "Untitled PDF";
+            "Untitled Document";
 
           const createdAt = doc.createdAt
             ? new Date(doc.createdAt).toLocaleString()
             : "Unknown date";
 
           const chunks = doc.chunks ? doc.chunks.length : 0;
-
           const fileUrl = `${API_BASE_URL}/${doc.filePath}`;
+          const quality = doc.qualityReport || {};
 
           list.innerHTML += `
             <li>
               <strong>${escapeHTML(fileName)}</strong><br>
+              <span class="tag">Type: ${escapeHTML(doc.fileType || "unknown")}</span>
+              <span class="tag">Chunks: ${chunks}</span>
+              <span class="tag">Text Length: ${doc.textLength || 0}</span><br>
               Uploaded: ${createdAt}<br>
-              Text Chunks: ${chunks}<br><br>
+              Extraction: ${quality.extractionSuccess ? "Success ✅" : "Failed ❌"}<br>
+              Scanned PDF Possible: ${quality.scannedPdfPossible ? "Yes ⚠️" : "No ✅"}<br>
+              Duplicate File: ${quality.duplicateFile ? "Yes ⚠️" : "No ✅"}<br><br>
 
-              <button
-                class="btn"
-                onclick="openPDF('${fileUrl}')">
-                Open PDF
-              </button>
-
-              <button
-                class="btn btn-danger"
-                onclick="deletePDF('${doc._id}')">
-                Delete PDF
-              </button>
+              <button class="btn" onclick="openPDF('${fileUrl}')">Open File</button>
+              <button class="btn" onclick="viewMetadata('${doc._id}')">View Metadata</button>
+              <button class="btn btn-danger" onclick="deletePDF('${doc._id}')">Delete File</button>
             </li>
           `;
         });
       } catch (error) {
         console.error(error);
-
-        list.innerHTML = "<li>Failed to load PDFs ❌</li>";
+        list.innerHTML = "<li>Failed to load documents ❌</li>";
       }
     }
 
@@ -450,10 +257,43 @@
       window.open(fileUrl, "_blank");
     }
 
-    async function deletePDF(id) {
-      const confirmDelete =
-        confirm("Are you sure you want to delete this PDF?");
+    async function viewMetadata(id) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/documents/${id}/metadata`, {
+          headers: {
+            ...getAuthHeaders()
+          }
+        });
 
+        const data = await response.json();
+
+        if (!response.ok) {
+          alert(data.message || "Failed to load metadata ❌");
+          return;
+        }
+
+        const quality = data.qualityReport || {};
+
+        alert(
+          `Title: ${data.title || "Not Available"}\n` +
+          `Authors: ${data.authors || "Not Available"}\n` +
+          `File Type: ${data.fileType || "Unknown"}\n` +
+          `File Size: ${data.fileSize ? (data.fileSize / 1024).toFixed(2) : 0} KB\n` +
+          `Page Count: ${data.pageCount || 0}\n` +
+          `Text Length: ${data.textLength || 0}\n` +
+          `Extraction Success: ${quality.extractionSuccess ? "Yes" : "No"}\n` +
+          `Empty Text: ${quality.emptyText ? "Yes" : "No"}\n` +
+          `Scanned PDF Possible: ${quality.scannedPdfPossible ? "Yes" : "No"}\n` +
+          `Duplicate File: ${quality.duplicateFile ? "Yes" : "No"}`
+        );
+      } catch (error) {
+        console.error(error);
+        alert("Failed to load metadata ❌");
+      }
+    }
+
+    async function deletePDF(id) {
+      const confirmDelete = confirm("Are you sure you want to delete this document?");
       if (!confirmDelete) return;
 
       try {
@@ -467,14 +307,14 @@
         const data = await response.json();
 
         if (response.ok) {
-          alert(data.message || "PDF deleted successfully ✅");
+          alert(data.message || "Document deleted successfully ✅");
           loadPDFs();
         } else {
-          alert(data.message || "PDF delete failed ❌");
+          alert(data.message || "Document delete failed ❌");
         }
       } catch (error) {
         console.error(error);
-        alert("Backend connection failed while deleting PDF ❌");
+        alert("Backend connection failed while deleting document ❌");
       }
     }
 
@@ -485,18 +325,8 @@
 
       if (!question) return;
 
-      chatBox.innerHTML += `
-        <p class="user-msg">
-          You: ${escapeHTML(question)}
-        </p>
-      `;
-
-      chatBox.innerHTML += `
-        <p class="system-msg" id="typingMsg">
-          Local AI is thinking...
-        </p>
-      `;
-
+      chatBox.innerHTML += `<p class="user-msg">You: ${escapeHTML(question)}</p>`;
+      chatBox.innerHTML += `<p class="system-msg" id="typingMsg">Local AI is thinking...</p>`;
       chatBox.scrollTop = chatBox.scrollHeight;
 
       try {
@@ -514,7 +344,6 @@
         const data = await response.json();
 
         const typingMsg = document.getElementById("typingMsg");
-
         if (typingMsg) typingMsg.remove();
 
         const answer =
@@ -523,25 +352,16 @@
           data.reply ||
           "No answer received from local AI.";
 
-        chatBox.innerHTML += `
-          <p class="ai-msg">
-            AI: ${escapeHTML(answer)}
-          </p>
-        `;
-
+        chatBox.innerHTML += `<p class="ai-msg">AI: ${escapeHTML(answer)}</p>`;
         chatBox.scrollTop = chatBox.scrollHeight;
 
         chatCounter++;
-
         localStorage.setItem("chatCounter", chatCounter);
-
         updateCounts();
-
       } catch (error) {
         console.error(error);
 
         const typingMsg = document.getElementById("typingMsg");
-
         if (typingMsg) typingMsg.remove();
 
         chatBox.innerHTML += `
@@ -570,13 +390,11 @@
     function logout() {
       localStorage.removeItem("jwtToken");
       localStorage.removeItem("user");
-
       window.location.href = "index.html";
     }
 
     updateCounts();
     loadPDFs();
   </script>
-
 </body>
 </html>
