@@ -1,50 +1,79 @@
 import express from "express";
-import OpenAI from "openai";
 
 const router = express.Router();
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
 
+// Local LLM Ollama Chat API
 router.post("/ask", async (req, res) => {
-  try {
-    const { message } = req.body;
 
-    if (!message || !message.trim()) {
-      return res.status(400).json({
-        aiResponse: "Please enter a question."
-      });
+    try {
+
+        const { message } = req.body;
+
+
+        if (!message) {
+            return res.status(400).json({
+                error:"Message required"
+            });
+        }
+
+
+        const response = await fetch(
+            "http://localhost:11434/api/chat",
+            {
+                method:"POST",
+
+                headers:{
+                    "Content-Type":"application/json"
+                },
+
+                body: JSON.stringify({
+
+                    model:"llama3.2:3b",
+
+                    messages:[
+                        {
+                            role:"user",
+                            content:message
+                        }
+                    ],
+
+                    stream:false
+
+                })
+            }
+        );
+
+
+        const data = await response.json();
+
+
+        res.json({
+
+            aiResponse:data.message.content
+
+        });
+
+
+    }
+    catch(error){
+
+        console.log(
+            "Ollama Error:",
+            error.message
+        );
+
+
+        res.json({
+
+            aiResponse:
+            "Local AI is not running. Start Ollama first."
+
+        });
+
     }
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are a helpful AI assistant inside a research workspace dashboard. Answer clearly and simply."
-        },
-        {
-          role: "user",
-          content: message
-        }
-      ],
-      max_tokens: 500
-    });
-
-    res.json({
-      aiResponse: completion.choices[0].message.content
-    });
-
-  } catch (error) {
-    console.error("AI Chat Error:", error.message);
-
-    res.status(500).json({
-      aiResponse:
-        "AI service failed. Please check OPENAI_API_KEY in .env and Render Environment."
-    });
-  }
 });
+
 
 export default router;

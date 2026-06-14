@@ -225,7 +225,7 @@
 
       <div class="topbar">
         <h1>Research Workspace Dashboard 🚀</h1>
-        <p>Upload PDFs and ask questions using your RAG chat system.</p>
+        <p>Local LLM powered dashboard using Ollama.</p>
       </div>
 
       <div class="cards">
@@ -241,16 +241,16 @@
 
         <div class="card">
           <h3>Status</h3>
-          <h2 id="systemStatus">Active</h2>
+          <h2 id="systemStatus">Local AI</h2>
         </div>
       </div>
 
       <div id="home" class="section">
         <h2>Dashboard Overview</h2>
         <p>
-          This dashboard is connected to your backend.
-          Upload PDFs, view uploaded files, delete PDFs,
-          and ask AI questions from those PDFs.
+          This dashboard connects to your local backend at
+          <strong>http://localhost:5000</strong>.
+          Your backend connects to Ollama local LLM.
         </p>
       </div>
 
@@ -281,13 +281,13 @@
 
         <div class="chat-box" id="chatBox">
           <p class="ai-msg">
-            AI: Hello, upload a PDF and ask a question from it.
+            AI: Hello, I am your local AI assistant. Ask me anything.
           </p>
         </div>
 
         <textarea
           id="userQuestion"
-          placeholder="Example: Summarize this paper">
+          placeholder="Example: What is LLM?">
         </textarea>
 
         <button class="btn" onclick="sendMessage()">
@@ -299,10 +299,9 @@
   </div>
 
   <script>
-    const API_BASE_URL = "https://objective-1-geu2.onrender.com";
+    const API_BASE_URL = "http://localhost:5000";
 
-    let chatCounter =
-      Number(localStorage.getItem("chatCounter")) || 0;
+    let chatCounter = Number(localStorage.getItem("chatCounter")) || 0;
 
     function getAuthHeaders() {
       const token = localStorage.getItem("jwtToken");
@@ -349,31 +348,25 @@
         msg.style.color = "#38bdf8";
         msg.innerText = "Uploading and processing PDF...";
 
-        const response = await fetch(
-          `${API_BASE_URL}/api/documents/upload`,
-          {
-            method: "POST",
-            headers: getAuthHeaders(),
-            body: formData
-          }
-        );
+        const response = await fetch(`${API_BASE_URL}/api/documents/upload`, {
+          method: "POST",
+          headers: getAuthHeaders(),
+          body: formData
+        });
 
         const data = await response.json();
 
         if (response.ok) {
           msg.style.color = "#22c55e";
           msg.innerText =
-            data.message ||
-            "PDF uploaded and processed successfully ✅";
+            data.message || "PDF uploaded and processed successfully ✅";
 
           fileInput.value = "";
           await loadPDFs();
         } else {
           msg.style.color = "#ef4444";
           msg.innerText =
-            data.message ||
-            data.error ||
-            "Upload failed ❌";
+            data.message || data.error || "Upload failed ❌";
         }
       } catch (error) {
         console.error(error);
@@ -390,14 +383,11 @@
       try {
         list.innerHTML = "<li>Loading PDFs...</li>";
 
-        const response = await fetch(
-          `${API_BASE_URL}/api/documents`,
-          {
-            headers: {
-              ...getAuthHeaders()
-            }
+        const response = await fetch(`${API_BASE_URL}/api/documents`, {
+          headers: {
+            ...getAuthHeaders()
           }
-        );
+        });
 
         const data = await response.json();
 
@@ -405,12 +395,10 @@
           ? data
           : data.documents || [];
 
-        document.getElementById("pdfCount").innerText =
-          docs.length;
+        document.getElementById("pdfCount").innerText = docs.length;
 
         if (docs.length === 0) {
-          list.innerHTML =
-            "<li>No PDFs uploaded yet.</li>";
+          list.innerHTML = "<li>No PDFs uploaded yet.</li>";
           return;
         }
 
@@ -454,8 +442,7 @@
       } catch (error) {
         console.error(error);
 
-        list.innerHTML =
-          "<li>Failed to load PDFs ❌</li>";
+        list.innerHTML = "<li>Failed to load PDFs ❌</li>";
       }
     }
 
@@ -470,48 +457,31 @@
       if (!confirmDelete) return;
 
       try {
-        const response = await fetch(
-          `${API_BASE_URL}/api/documents/${id}`,
-          {
-            method: "DELETE",
-            headers: {
-              ...getAuthHeaders()
-            }
+        const response = await fetch(`${API_BASE_URL}/api/documents/${id}`, {
+          method: "DELETE",
+          headers: {
+            ...getAuthHeaders()
           }
-        );
+        });
 
         const data = await response.json();
 
         if (response.ok) {
-          alert(
-            data.message ||
-            "PDF deleted successfully ✅"
-          );
-
+          alert(data.message || "PDF deleted successfully ✅");
           loadPDFs();
         } else {
-          alert(
-            data.message ||
-            "PDF delete failed ❌"
-          );
+          alert(data.message || "PDF delete failed ❌");
         }
       } catch (error) {
         console.error(error);
-
-        alert(
-          "Backend connection failed while deleting PDF ❌"
-        );
+        alert("Backend connection failed while deleting PDF ❌");
       }
     }
 
     async function sendMessage() {
-      const questionInput =
-        document.getElementById("userQuestion");
-
+      const questionInput = document.getElementById("userQuestion");
       const question = questionInput.value.trim();
-
-      const chatBox =
-        document.getElementById("chatBox");
+      const chatBox = document.getElementById("chatBox");
 
       if (!question) return;
 
@@ -523,31 +493,27 @@
 
       chatBox.innerHTML += `
         <p class="system-msg" id="typingMsg">
-          AI is thinking...
+          Local AI is thinking...
         </p>
       `;
 
       chatBox.scrollTop = chatBox.scrollHeight;
 
       try {
-        const response = await fetch(
-          `${API_BASE_URL}/api/chat/ask`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              ...getAuthHeaders()
-            },
-            body: JSON.stringify({
-              message: question
-            })
-          }
-        );
+        const response = await fetch(`${API_BASE_URL}/api/chat/ask`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...getAuthHeaders()
+          },
+          body: JSON.stringify({
+            message: question
+          })
+        });
 
         const data = await response.json();
 
-        const typingMsg =
-          document.getElementById("typingMsg");
+        const typingMsg = document.getElementById("typingMsg");
 
         if (typingMsg) typingMsg.remove();
 
@@ -555,7 +521,7 @@
           data.aiResponse ||
           data.answer ||
           data.reply ||
-          "No answer received from backend.";
+          "No answer received from local AI.";
 
         chatBox.innerHTML += `
           <p class="ai-msg">
@@ -567,24 +533,20 @@
 
         chatCounter++;
 
-        localStorage.setItem(
-          "chatCounter",
-          chatCounter
-        );
+        localStorage.setItem("chatCounter", chatCounter);
 
         updateCounts();
 
       } catch (error) {
         console.error(error);
 
-        const typingMsg =
-          document.getElementById("typingMsg");
+        const typingMsg = document.getElementById("typingMsg");
 
         if (typingMsg) typingMsg.remove();
 
         chatBox.innerHTML += `
           <p class="ai-msg">
-            AI: Backend connection failed ❌
+            AI: Backend connection failed. Make sure npm start is running.
           </p>
         `;
       }
@@ -593,8 +555,7 @@
     }
 
     function updateCounts() {
-      document.getElementById("chatCount").innerText =
-        chatCounter;
+      document.getElementById("chatCount").innerText = chatCounter;
     }
 
     function escapeHTML(text) {

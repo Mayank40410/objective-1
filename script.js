@@ -13,8 +13,6 @@ function showMessage(element, msg, color) {
   }
 }
 
-/* Modal Controls */
-
 function openLoginModal() {
   getElement("loginModal").style.display = "flex";
 }
@@ -31,7 +29,17 @@ function closeRegisterModal() {
   getElement("registerModal").style.display = "none";
 }
 
-/* Register */
+function showMessageAlert() {
+  alert("Welcome to AuthSecure AI Research Workspace 🚀");
+}
+
+function googleLogin() {
+  alert("Google OAuth setup pending");
+}
+
+function githubLogin() {
+  alert("GitHub OAuth setup pending");
+}
 
 const registerForm = getElement("registerForm");
 
@@ -82,8 +90,6 @@ if (registerForm) {
   });
 }
 
-/* Login */
-
 const loginForm = getElement("loginForm");
 
 if (loginForm) {
@@ -119,11 +125,10 @@ if (loginForm) {
         showMessage(message, "Login Successful ✅", "#22c55e");
 
         setTimeout(() => {
-  closeLoginModal();
-  alert("Protected Session Started 🚀");
-  window.location.href = "dashboard.html";
-}, 1000);
-
+          closeLoginModal();
+          alert("Protected Session Started 🚀");
+          window.location.href = "dashboard.html";
+        }, 1000);
       } else {
         showMessage(message, data.message || "Invalid Login ❌", "red");
       }
@@ -134,14 +139,10 @@ if (loginForm) {
   });
 }
 
-/* Logout */
-
 function logoutUser() {
   localStorage.removeItem("jwtToken");
   alert("Logout Successful ✅");
 }
-
-/* Auth Check */
 
 function checkAuthentication() {
   const token = localStorage.getItem("jwtToken");
@@ -155,45 +156,6 @@ function checkAuthentication() {
 
 checkAuthentication();
 
-/* Project API */
-
-async function getProjects() {
-  const response = await fetch(`${API_BASE_URL}/api/projects`);
-  return response.json();
-}
-
-async function createProject(projectName) {
-  const response = await fetch(`${API_BASE_URL}/api/projects`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      projectName
-    })
-  });
-
-  return response.json();
-}
-
-/* Chat API */
-
-async function askQuestion(message) {
-  const response = await fetch(`${API_BASE_URL}/api/chat/ask`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      message
-    })
-  });
-
-  return response.json();
-}
-
-/* Button Effects */
-
 document.querySelectorAll(".feature-card").forEach((card) => {
   card.addEventListener("mouseenter", () => {
     card.style.transform = "translateY(-10px) scale(1.03)";
@@ -204,12 +166,45 @@ document.querySelectorAll(".feature-card").forEach((card) => {
   });
 });
 
-/* OAuth Placeholder */
+/* Typing Animation */
 
-function googleLogin() {
-  alert("Google OAuth setup pending");
+const words = [
+  "Workspace Management",
+  "AI Research Dashboard",
+  "PDF RAG Assistant",
+  "Secure Login System"
+];
+
+let wordIndex = 0;
+let charIndex = 0;
+let isDeleting = false;
+
+function typeEffect() {
+  const typingText = document.getElementById("typingText");
+
+  if (!typingText) return;
+
+  const currentWord = words[wordIndex];
+
+  if (isDeleting) {
+    typingText.textContent = currentWord.substring(0, charIndex--);
+  } else {
+    typingText.textContent = currentWord.substring(0, charIndex++);
+  }
+
+  if (!isDeleting && charIndex === currentWord.length + 1) {
+    isDeleting = true;
+
+    setTimeout(typeEffect, 1200);
+    return;
+  }
+
+  if (isDeleting && charIndex === 0) {
+    isDeleting = false;
+    wordIndex = (wordIndex + 1) % words.length;
+  }
+
+  setTimeout(typeEffect, isDeleting ? 45 : 90);
 }
 
-function githubLogin() {
-  alert("GitHub OAuth setup pending");
-}
+typeEffect();

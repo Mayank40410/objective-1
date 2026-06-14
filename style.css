@@ -57,7 +57,6 @@ body::after {
 .logo {
   font-size: 30px;
   font-weight: 800;
-  letter-spacing: 1px;
 }
 
 .get-started {
@@ -86,6 +85,21 @@ body::after {
   gap: 50px;
 }
 
+.hero-content {
+  animation: slideUp 0.9s ease;
+}
+
+.ai-badge {
+  display: inline-block;
+  padding: 10px 18px;
+  margin-bottom: 20px;
+  border-radius: 30px;
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  font-weight: 700;
+}
+
 .hero-content h1 {
   font-size: 62px;
   line-height: 1.15;
@@ -93,7 +107,7 @@ body::after {
   margin-bottom: 25px;
 }
 
-.hero-content h1 span {
+#typingText {
   color: #38bdf8;
 }
 
@@ -146,6 +160,31 @@ body::after {
   color: white;
 }
 
+.quick-stats {
+  display: flex;
+  gap: 18px;
+  margin-top: 35px;
+  flex-wrap: wrap;
+}
+
+.quick-stats div {
+  min-width: 130px;
+  padding: 18px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  backdrop-filter: blur(12px);
+}
+
+.quick-stats h2 {
+  color: #38bdf8;
+  font-size: 28px;
+}
+
+.quick-stats p {
+  color: #cbd5e1;
+}
+
 .status-card {
   background: rgba(30, 41, 59, 0.7);
   backdrop-filter: blur(18px);
@@ -154,6 +193,20 @@ body::after {
   border: 1px solid rgba(255,255,255,0.15);
   box-shadow: 0 25px 60px rgba(0,0,0,0.35);
   animation: floatCard 4s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.status-card::before {
+  content: "";
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  background: #38bdf8;
+  filter: blur(80px);
+  opacity: 0.25;
+  right: -40px;
+  top: -40px;
 }
 
 .status-card h2 {
@@ -262,6 +315,13 @@ body::after {
   cursor: pointer;
 }
 
+#loginMessage,
+#registerMessage {
+  text-align: center;
+  margin-top: 15px;
+  font-weight: bold;
+}
+
 @keyframes floatCard {
   0%, 100% {
     transform: translateY(0);
@@ -269,6 +329,18 @@ body::after {
 
   50% {
     transform: translateY(-12px);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(35px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -282,7 +354,8 @@ body::after {
     font-size: 42px;
   }
 
-  .buttons {
+  .buttons,
+  .quick-stats {
     justify-content: center;
   }
 
