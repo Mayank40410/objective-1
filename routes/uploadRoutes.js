@@ -4,7 +4,11 @@ import fs from "fs";
 import path from "path";
 import { PDFParse } from "pdf-parse";
 import mammoth from "mammoth";
+
 import Document from "../models/Document.js";
+import Chunk from "../models/Chunk.js";
+import { createChunks } from "../utils/chunkEngine.js";
+import { generateEmbedding } from "../utils/embeddingEngine.js";
 
 const router = express.Router();
 
@@ -64,27 +68,6 @@ function cleanText(rawText = "") {
   return text.trim();
 }
 
-function splitText(text) {
-  const cleanTextValue = text.replace(/\s+/g, " ").trim();
-
-  if (!cleanTextValue) {
-    return [];
-  }
-
-  const words = cleanTextValue.split(" ");
-  const chunks = [];
-
-  for (let i = 0; i < words.length; i += 150) {
-    const chunk = words.slice(i, i + 150).join(" ");
-
-    if (chunk.trim()) {
-      chunks.push(chunk);
-    }
-  }
-
-  return chunks;
-}
-
 async function extractText(filePath, fileType) {
   if (fileType === "pdf") {
     const buffer = fs.readFileSync(filePath);
@@ -94,7 +77,6 @@ async function extractText(filePath, fileType) {
     });
 
     const data = await parser.getText();
-
     await parser.destroy();
 
     return {
@@ -154,10 +136,9 @@ router.post("/upload", upload.single("document"), async (req, res) => {
     const extracted = await extractText(req.file.path, extension);
 
     const rawText = extracted.text || "";
-    const extractedText = cleanText(rawText);
-    const chunks = splitText(extractedText);
+    const cleanedText = cleanText(rawText);
 
-    const isEmptyText = extractedText.trim().length === 0;
+    const isEmptyText = cleanedText.trim().length === 0;
 
     const baseName = req.file.originalname.replace(/\.[^/.]+$/, "");
     const timeStamp = Date.now();
@@ -167,7 +148,7 @@ router.post("/upload", upload.single("document"), async (req, res) => {
       `${timeStamp}-${baseName}-clean.txt`
     );
 
-    fs.writeFileSync(cleanTextPath, extractedText, "utf-8");
+    fs.writeFileSync(cleanTextPath, cleanedText, "utf-8");
 
     const metadataObject = {
       title:
@@ -182,7 +163,7 @@ router.post("/upload", upload.single("document"), async (req, res) => {
       fileType: extension,
       fileSize: req.file.size,
       pageCount: extracted.pageCount,
-      textLength: extractedText.length,
+      textLength: cleanedText.length,
       cleanTextPath: cleanTextPath.replace(/\\/g, "/")
     };
 
@@ -209,8 +190,7 @@ router.post("/upload", upload.single("document"), async (req, res) => {
       title: metadataObject.title,
       authors: metadataObject.authors,
       pageCount: extracted.pageCount,
-      textLength: extractedText.length,
-      chunks,
+      textLength: cleanedText.length,
 
       qualityReport: {
         extractionSuccess: !isEmptyText,
@@ -220,9 +200,36 @@ router.post("/upload", upload.single("document"), async (req, res) => {
       }
     });
 
+    await Chunk.deleteMany({
+      documentId: document._id
+    });
+
+    const chunkObjects = createChunks(
+      cleanedText,
+      document._id,
+      req.file.originalname
+    );
+
+    const savedChunks = [];
+
+    for (const chunk of chunkObjects) {
+      const embedding = await generateEmbedding(chunk.chunkText);
+
+      const savedChunk = await Chunk.create({
+        ...chunk,
+        embedding
+      });
+
+      savedChunks.push(savedChunk._id);
+    }
+
+    document.chunks = chunkObjects.map((item) => item.chunkText);
+    await document.save();
+
     res.status(201).json({
-      message: "Document uploaded, cleaned, and processed successfully",
-      document
+      message: "Document uploaded, cleaned, chunked, embedded, and processed successfully",
+      document,
+      totalChunks: savedChunks.length
     });
 
   } catch (error) {
@@ -261,6 +268,10 @@ router.get("/:id/metadata", async (req, res) => {
       });
     }
 
+    const chunkCount = await Chunk.countDocuments({
+      documentId: document._id
+    });
+
     res.json({
       title: document.title,
       authors: document.authors,
@@ -270,6 +281,7 @@ router.get("/:id/metadata", async (req, res) => {
       textLength: document.textLength,
       cleanTextPath: document.cleanTextPath,
       metadataPath: document.metadataPath,
+      chunkCount,
       qualityReport: document.qualityReport,
       uploadDate: document.createdAt
     });
@@ -304,10 +316,14 @@ router.delete("/:id", async (req, res) => {
       fs.unlinkSync(document.metadataPath);
     }
 
+    await Chunk.deleteMany({
+      documentId: document._id
+    });
+
     await Document.findByIdAndDelete(req.params.id);
 
     res.json({
-      message: "Document deleted successfully"
+      message: "Document and related chunks deleted successfully"
     });
 
   } catch (error) {

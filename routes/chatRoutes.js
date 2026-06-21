@@ -1,5 +1,6 @@
 import express from "express";
-import Document from "../models/Document.js";
+import { retrieveRelevantChunks } from "../utils/retriever.js";
+import { buildGroundedPrompt } from "../utils/promptBuilder.js";
 
 const router = express.Router();
 
@@ -13,36 +14,9 @@ router.post("/ask", async (req, res) => {
       });
     }
 
-    const documents = await Document.find();
+    const retrievedChunks = await retrieveRelevantChunks(message);
 
-    let context = "";
-
-    documents.forEach((doc) => {
-      doc.chunks.forEach((chunk) => {
-        const questionWords = message.toLowerCase().split(" ");
-
-        const matched = questionWords.some((word) =>
-          chunk.toLowerCase().includes(word)
-        );
-
-        if (matched && context.length < 3000) {
-          context += chunk + "\n";
-        }
-      });
-    });
-
-    const prompt = `
-You are a helpful AI assistant.
-
-Use the document context if it is relevant.
-If the context is not relevant, answer normally.
-
-Document Context:
-${context || "No relevant document context found."}
-
-User Question:
-${message}
-`;
+    const prompt = buildGroundedPrompt(message, retrievedChunks);
 
     const response = await fetch("http://localhost:11434/api/chat", {
       method: "POST",
@@ -63,17 +37,24 @@ ${message}
 
     const data = await response.json();
 
+    const sources = retrievedChunks.map((item) => ({
+      document: item.chunk.documentName,
+      page: item.chunk.page,
+      chunk: item.chunk.chunkIndex,
+      score: item.score.toFixed(3)
+    }));
+
     res.json({
-      aiResponse:
-        data.message?.content || "No response received from local LLM."
+      aiResponse: data.message?.content || "No response from local LLM.",
+      sources
     });
 
   } catch (error) {
-    console.error("Local LLM Error:", error.message);
+    console.error("RAG Chat Error:", error.message);
 
     res.status(500).json({
       aiResponse:
-        "Local AI is not running. Start Ollama first using: ollama run llama3.2:3b"
+        "Local RAG AI failed. Make sure Ollama and backend are running."
     });
   }
 });
