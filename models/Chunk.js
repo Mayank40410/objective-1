@@ -7,20 +7,21 @@ const chunkSchema = new mongoose.Schema(
       ref: "Document",
       required: true
     },
-
     fileName: {
       type: String,
       required: true
     },
-
     chunkText: {
       type: String,
       required: true
     },
-
     chunkIndex: {
       type: Number,
       required: true
+    },
+    embedding: {
+      type: [Number],
+      default: []
     }
   },
   {
